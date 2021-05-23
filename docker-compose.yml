@@ -37,12 +37,25 @@ services:
       - "1883:1883"
       - "9001:9001"
 
-  my_app:
+  publisher:
     build: .
-    command: "python3 temperature.py"
+    command: "python3 publisher.py"
+    container_name: publisher
     depends_on:
       - influxdb
       - mosquitto
+    network_mode: host
+
+  subscriber:
+    build:
+      context: .
+      dockerfile: subscriber.Dockerfile
+    command: "python3 subscriber.py"
+    container_name: subscriber
+    depends_on:
+      - influxdb
+      - mosquitto
+      - publisher
     network_mode: host
 
 
